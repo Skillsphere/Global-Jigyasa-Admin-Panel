@@ -6,7 +6,6 @@ import { map, take, mergeMap } from 'rxjs/operators';
 import { of, merge, Observable } from 'rxjs';
 import { getEmptyImage, getLoadingImage } from '../../helpers/assets.helper';
 import { SettingsService } from '../settings.service';
-import { Language } from '../../models/language.model';
 import { UsersService } from './users.service';
 import { QueryFn } from '@angular/fire/firestore';
 import { Newsbulletin, NewsItemStatus } from '../../models/collections/newsbulletin.model';
@@ -97,11 +96,9 @@ export class NewsbulletinService {
   }
 
   get(id: string) {
-    return this.db.getDocument('news_items', id).pipe(mergeMap(async (post: Post) => {
-      const translations = await this.getTranslations(post.translationId).pipe(take(1)).toPromise();
-      post.id = id;
-      post.translations = translations;
-      return post;
+    return this.db.getDocument('news_items', id).pipe(mergeMap(async (newsbulletin: Newsbulletin) => {
+      newsbulletin.id = id;
+      return newsbulletin;
     }));
   }
 
@@ -116,29 +113,23 @@ export class NewsbulletinService {
     }
   }
 
-  private pipePosts(postsObservable: Observable<Post[]>) {
-    return postsObservable.pipe(mergeMap(async (posts: Post[]) => {
-      const activeSupportedLanguages = this.settings.getActiveSupportedLanguages().map((lang: Language) => lang.key);
+  private pipeNewsbulletins(newsbulletinsObservable: Observable<Newsbulletin[]>) {
+    return newsbulletinsObservable.pipe(mergeMap(async (newsbulletins: Newsbulletin[]) => {
       //posts.forEach((post: Post) => { // forEach loop doesn't seems to work well with async/await
-      for (let post of posts) {
+      for (let newsbulletin of newsbulletins) {
         // console.log(post);
-        post.translations = await this.getTranslations(post.translationId).pipe(take(1)).toPromise();
-        // console.log(post.translations);
-        const postLanguages = Object.keys(post.translations);
-        post.image = {
-          path: post.image,
-          url: post.image ? merge(of(getLoadingImage()), this.getImageUrl(post.image as string)) : of(getEmptyImage())
+        newsbulletin.imagePath = {
+          path: newsbulletin.imagePath,
+          url: newsbulletin.imagePath ? merge(of(getLoadingImage()), this.getImageUrl(newsbulletin.imagePath as string)) : of(getEmptyImage())
         };
-        post.author = post.createdBy ? this.users.getFullName(post.createdBy) : of(null);
-        post.isTranslatable = !activeSupportedLanguages.every((lang: string) => postLanguages.includes(lang));
+        newsbulletin.author = newsbulletin.createdBy ? this.users.getFullName(newsbulletin.createdBy) : of(null);
       }
-      //});
-      return posts;
+      return newsbulletins;
     }));
   }
 
   getAll() {
-    return this.pipePosts(this.db.getCollection('posts'));
+    return this.pipeNewsbulletins(this.db.getCollection('news_items'));
   }
 
   getWhere(field: string, operator: firebase.firestore.WhereFilterOp, value: string, applyPipe: boolean = false) {
@@ -146,28 +137,26 @@ export class NewsbulletinService {
   }
 
   getWhereFn(queryFn: QueryFn, applyPipe: boolean = false) {
-    const postsObservable = this.db.getCollection('posts', queryFn);
-    return applyPipe ? this.pipePosts(postsObservable) : postsObservable;
+    const newsbulletinsObservable = this.db.getCollection('news_items', queryFn);
+    return applyPipe ? this.pipeNewsbulletins(newsbulletinsObservable) : newsbulletinsObservable;
   }
 
-  edit(id: string, data: Post) {
-    const post: Post = {
+  edit(id: string, data: Newsbulletin) {
+    const newsbulletin: Newsbulletin = {
       title: data.title,
-      lang: data.lang,
-      slug: data.slug,
-      date: data.date,
-      content: data.content,
+      description: data.description,
+      addTime: data.addTime,
+      key_date: data.key_date,
       status: data.status,
-      categories: data.categories,
       updatedAt: now(),
       updatedBy: this.db.currentUser.id
     };
-    if (/*data.image !== undefined && */data.image === null) {
-      post.image = null;
+    if (/*data.image !== undefined && */data.imagePath === null) {
+      newsbulletin.imagePath = null;
     }
     return new Promise((resolve, reject) => {
-      this.db.setDocument('posts', id, post).then(() => {
-        this.uploadImage(id, data.image as File).then(() => {
+      this.db.setDocument('news_items', id, newsbulletin).then(() => {
+        this.uploadImage(id, data.imagePath as File).then(() => {
           resolve();
         }).catch((error: Error) => {
           reject(error);
@@ -193,21 +182,17 @@ export class NewsbulletinService {
     });
   }
 
-  async delete(id: string, data: { imagePath: string, lang: string, translationId: string, translations: PostTranslation }) {
+  async delete(id: string, data: { imagePath: string }) {
     if (data.imagePath) {
-      const posts: Post[] = await this.getWhere('image', '==', data.imagePath).pipe(take(1)).toPromise();
-      if (posts.length > 1) {
+      const newsbulletins: Newsbulletin[] = await this.getWhere('imagePath', '==', data.imagePath).pipe(take(1)).toPromise();
+      if (newsbulletins.length > 1) {
         data.imagePath = null; // do not delete image if used by more than 1 post
       }
     }
     return new Promise((resolve, reject) => {
-      this.deleteTranslation(data.translationId, data.lang, data.translations).then(() => { // should be done before deleting document (posts observable will be synced before if not)
-        this.db.deleteDocument('posts', id).then(() => {
-          this.deleteImage(data.imagePath).then(() => {
-            resolve();
-          }).catch((error: Error) => {
-            reject(error);
-          });
+      this.db.deleteDocument('news_items', id).then(() => {
+        this.deleteImage(data.imagePath).then(() => {
+          resolve();
         }).catch((error: Error) => {
           reject(error);
         });
@@ -218,26 +203,15 @@ export class NewsbulletinService {
   }
 
   setStatus(id: string, status: NewsItemStatus) {
-    return this.db.setDocument('posts', id, { status: status });
-  }
-
-  isSlugDuplicated(slug: string, lang: string, id?: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      this.getWhereFn(ref => ref.where('slug', '==', slug).where('lang', '==', lang)).pipe(take(1)).toPromise().then((posts: Post[]) => {
-        //console.log(posts, posts[0]['id']);
-        resolve(posts && posts.length && (!id || (posts[0]['id'] as any) !== id));
-      }).catch((error: Error) => {
-        reject(error);
-      });
-    });
+    return this.db.setDocument('news_items', id, { status: status });
   }
 
   countAll() {
-    return this.db.getDocumentsCount('posts');
+    return this.db.getDocumentsCount('news_items');
   }
 
   countWhereFn(queryFn: QueryFn) {
-    return this.db.getDocumentsCount('posts', queryFn);
+    return this.db.getDocumentsCount('news_items', queryFn);
   }
 
   countWhere(field: string, operator: firebase.firestore.WhereFilterOp, value: string) {

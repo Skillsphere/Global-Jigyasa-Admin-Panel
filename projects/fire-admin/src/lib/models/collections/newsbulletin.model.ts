@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 
 export interface Newsbulletin {
+  id?: string;
   title: string;
   description: string;
   addTime: Date; // timestamp
