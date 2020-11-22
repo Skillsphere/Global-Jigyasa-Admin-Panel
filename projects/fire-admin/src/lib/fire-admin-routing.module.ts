@@ -24,6 +24,7 @@ import { UserGuard } from './guards/user.guard';
 import { RegisterComponent } from './components/register/register.component';
 import { RegisterGuard } from './guards/register.guard';
 import { LogoutComponent } from './components/logout/logout.component';
+import { NewsbulletinsAddComponent } from './components/newsbulletin/add/newsbulletins-add.component';
 
 const routes: Routes = [
   {
@@ -130,6 +131,17 @@ const routes: Routes = [
           {
             path: '**',
             redirectTo: 'list'
+          }
+        ]
+      },
+      // News Bulletin
+      {
+        path: 'newsbulletins',
+        canActivate: [AuthGuard],
+        children: [
+          {
+            path: 'add',
+            component: NewsbulletinsAddComponent
           }
         ]
       },

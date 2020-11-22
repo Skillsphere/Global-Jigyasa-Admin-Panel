@@ -11,7 +11,7 @@ import { QueryFn } from '@angular/fire/firestore';
 import { Newsbulletin, NewsItemStatus } from '../../models/collections/newsbulletin.model';
 
 @Injectable()
-export class NewsbulletinService {
+export class NewsbulletinsService {
 
   private allStatus: object = {};
   private statusColors: object = {

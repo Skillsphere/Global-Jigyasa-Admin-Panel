@@ -64,6 +64,8 @@ import { DateTimePipe } from './pipes/datetime.pipe';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeAr from '@angular/common/locales/ar';
+import { NewsbulletinsAddComponent } from './components/newsbulletin/add/newsbulletins-add.component';
+import { NewsbulletinsService } from './services/collections/newsbulletin.service';
 registerLocaleData(localeFr);
 registerLocaleData(localeAr);
 
@@ -83,6 +85,7 @@ registerLocaleData(localeAr);
     PostsAddComponent,
     PostsEditComponent,
     PostsCategoriesComponent,
+    NewsbulletinsAddComponent,
     SettingsComponent,
     LayoutComponent,
     AlertComponent,
@@ -129,6 +132,7 @@ registerLocaleData(localeAr);
     DatabaseService,
     CategoriesService,
     PostsService,
+    NewsbulletinsService,
     EscapeUrlPipe,
     StorageService,
     UsersService,
