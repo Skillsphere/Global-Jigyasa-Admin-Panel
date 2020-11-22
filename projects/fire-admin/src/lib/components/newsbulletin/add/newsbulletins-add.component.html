@@ -2,8 +2,8 @@
   <!-- Page Header -->
   <div class="page-header row no-gutters py-4">
     <div class="col-12 text-center text-sm-left mb-0">
-      <span class="text-uppercase page-subtitle">{{ 'Posts' | translate }}</span>
-      <h3 class="page-title">{{ 'AddNewPost' | translate }}</h3>
+      <span class="text-uppercase page-subtitle">{{ 'News Bulletin' | translate }}</span>
+      <h3 class="page-title">{{ 'Add News Bulletin' | translate }}</h3>
     </div>
   </div>
   <!-- End Page Header -->
@@ -13,7 +13,7 @@
       <div class="card card-small mb-3">
         <div class="card-body">
           <form class="add-new-post">
-            <input class="form-control form-control-lg mb-3" type="text" placeholder="{{ 'PostTitle' | translate }}" [(ngModel)]="title" name="title" (input)="onTitleInput()">
+            <input class="form-control form-control-lg mb-3" type="text" placeholder="{{ 'News Bulletin Title' | translate }}" [(ngModel)]="title" name="title" (input)="onTitleInput()">
             <div id="editor-container" class="add-new-post__editor mb-1"></div>
           </form>
         </div>
