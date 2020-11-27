@@ -21,7 +21,6 @@ export class NewsbulletinsAddComponent implements OnInit, AfterViewInit, OnDestr
   key_date: string;
   editor: any;
   private status: NewsItemStatus;
-  date: string;
   private image: File;
   imageSrc: string|ArrayBuffer;
   isSubmitButtonsDisabled: boolean = false;
@@ -36,12 +35,11 @@ export class NewsbulletinsAddComponent implements OnInit, AfterViewInit, OnDestr
 
   ngOnInit() {
     this.status = NewsItemStatus.Draft;
-    this.date = new Date().toISOString().slice(0, 10);
+    this.key_date = new Date().toISOString().slice(0, 10);
     this.image = null;
     this.imageSrc = getEmptyImage();
   }
 
-  //TODO: Change this
   ngAfterViewInit() {
     this.editor = initTextEditor('#editor-container', this.i18n.get('PostContent'));
   }
@@ -51,7 +49,18 @@ export class NewsbulletinsAddComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   onTitleInput() {
-    //this.slug = slugify(this.title).substr(0, 50);
+    
+  }
+
+  getDescription() {
+    var description = "";
+    
+    var data = this.editor.getContents();
+    Object.keys(data.ops).map(item => {
+      description += data.ops[item].insert;
+    });
+
+    return description;
   }
 
   onImageChange(event: Event) {
@@ -73,15 +82,15 @@ export class NewsbulletinsAddComponent implements OnInit, AfterViewInit, OnDestr
       target.isLoading = false;
       this.isSubmitButtonsDisabled = false;
     };
-    
+
     startLoading();
     if (status) {
       this.status = status;
     }
     this.newsbulletins.add({
       title: this.title,
-      description: this.editor.root.innerHTML,
-      addTime: new Date(this.date),
+      description: this.getDescription(),
+      addTime: new Date(this.key_date),
       key_date: this.key_date,
       imagePath: this.image,
       status: this.status
