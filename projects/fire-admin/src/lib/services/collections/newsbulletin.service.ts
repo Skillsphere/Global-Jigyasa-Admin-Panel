@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DatabaseService } from '../database.service';
 import { now, guid, isFile } from '../../helpers/functions.helper';
 import { StorageService } from '../storage.service';
-import { map, take, mergeMap } from 'rxjs/operators';
+import { map, take, mergeMap, takeUntil } from 'rxjs/operators';
 import { of, merge, Observable } from 'rxjs';
 import { getEmptyImage, getLoadingImage } from '../../helpers/assets.helper';
 import { SettingsService } from '../settings.service';
@@ -80,14 +80,14 @@ export class NewsbulletinsService {
       if (imageFile && isFile(imageFile)) {
         const imageName = guid() + '.' + imageFile.name.split('.').pop();
         const imagePath = `news/${id}/${imageName}`;
-        this.storage.upload(imagePath, imageFile).then(() => {
-          this.db.setDocument('news_items', id, { imagePath: imagePath }).then(() => {
+        const downloadURL = this.storage.uploadWithDownloadURL(imagePath, imageFile)
+        
+        downloadURL.subscribe((imageURL) => {
+          this.db.setDocument('news_items', id, { imagePath: imageURL }).then(() => {
             resolve();
           }).catch((error: Error) => {
             reject(error);
           });
-        }).catch((error: Error) => {
-          reject(error);
         });
       } else {
         resolve();
