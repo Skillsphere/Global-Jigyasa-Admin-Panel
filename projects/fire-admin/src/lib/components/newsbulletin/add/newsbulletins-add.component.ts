@@ -41,7 +41,7 @@ export class NewsbulletinsAddComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngAfterViewInit() {
-    this.editor = initTextEditor('#editor-container', this.i18n.get('PostContent'));
+    this.editor = initTextEditor('#editor-container', 'News Bulletin Content');
   }
 
   ngOnDestroy() {
