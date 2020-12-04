@@ -24,6 +24,7 @@ export class NewsbulletinsAddComponent implements OnInit, AfterViewInit, OnDestr
   private image: File;
   imageSrc: string|ArrayBuffer;
   isSubmitButtonsDisabled: boolean = false;
+  isImageEmpty: boolean = true;
 
   constructor(
     private i18n: I18nService,
@@ -42,6 +43,9 @@ export class NewsbulletinsAddComponent implements OnInit, AfterViewInit, OnDestr
 
   ngAfterViewInit() {
     this.editor = initTextEditor('#editor-container', 'News Bulletin Content');
+    this.editor.on('text-change', () => {
+      this.isSubmitButtonsDisabled = !(this.editor.getLength() > 1);
+    });
   }
 
   ngOnDestroy() {
@@ -65,6 +69,7 @@ export class NewsbulletinsAddComponent implements OnInit, AfterViewInit, OnDestr
 
   onImageChange(event: Event) {
     this.image = (event.target as HTMLInputElement).files[0];
+    this.isImageEmpty = (this.image == null);
     const reader = new FileReader();
     reader.onload = () => {
       this.imageSrc = reader.result;
