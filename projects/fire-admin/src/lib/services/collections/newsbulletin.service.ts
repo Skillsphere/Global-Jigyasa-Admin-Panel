@@ -62,7 +62,7 @@ export class NewsbulletinsService {
       newsbulletin.imagePath = data.imagePath;
     }
     
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.db.addDocument('news_items', newsbulletin).then((doc: any) => {
         this.uploadImage(doc.id, data.imagePath as File).then(() => {
           resolve();
@@ -76,7 +76,7 @@ export class NewsbulletinsService {
   }
 
   private uploadImage(id: string, imageFile: File) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (imageFile && isFile(imageFile)) {
         const imageName = guid() + '.' + imageFile.name.split('.').pop();
         const imagePath = `news/${id}/${imageName}`;
@@ -117,11 +117,11 @@ export class NewsbulletinsService {
     return newsbulletinsObservable.pipe(mergeMap(async (newsbulletins: Newsbulletin[]) => {
       //posts.forEach((post: Post) => { // forEach loop doesn't seems to work well with async/await
       for (let newsbulletin of newsbulletins) {
-        // console.log(post);
-        newsbulletin.imagePath = {
-          path: newsbulletin.imagePath,
-          url: newsbulletin.imagePath ? merge(of(getLoadingImage()), this.getImageUrl(newsbulletin.imagePath as string)) : of(getEmptyImage())
-        };
+        console.log(newsbulletin);
+        // newsbulletin.imagePath = {
+        //   path: newsbulletin.imagePath,
+        //   url: newsbulletin.imagePath ? merge(of(getLoadingImage()), this.getImageUrl(newsbulletin.imagePath as string)) : of(getEmptyImage())
+        // };
         newsbulletin.author = newsbulletin.createdBy ? this.users.getFullName(newsbulletin.createdBy) : of(null);
       }
       return newsbulletins;
@@ -154,7 +154,7 @@ export class NewsbulletinsService {
     if (/*data.image !== undefined && */data.imagePath === null) {
       newsbulletin.imagePath = null;
     }
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.db.setDocument('news_items', id, newsbulletin).then(() => {
         this.uploadImage(id, data.imagePath as File).then(() => {
           resolve();
@@ -168,7 +168,7 @@ export class NewsbulletinsService {
   }
 
   private deleteImage(imagePath: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       // console.log(imagePath);
       if (imagePath) {
         this.storage.delete(imagePath).toPromise().then(() => {
@@ -189,7 +189,7 @@ export class NewsbulletinsService {
         data.imagePath = null; // do not delete image if used by more than 1 post
       }
     }
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.db.deleteDocument('news_items', id).then(() => {
         this.deleteImage(data.imagePath).then(() => {
           resolve();

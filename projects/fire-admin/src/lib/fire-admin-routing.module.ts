@@ -25,6 +25,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { RegisterGuard } from './guards/register.guard';
 import { LogoutComponent } from './components/logout/logout.component';
 import { NewsbulletinsAddComponent } from './components/newsbulletin/add/newsbulletins-add.component';
+import { NewsbulletinsListComponent } from './components/newsbulletin/list/newsbulletins-list.component';
 
 const routes: Routes = [
   {
@@ -142,7 +143,19 @@ const routes: Routes = [
           {
             path: 'add',
             component: NewsbulletinsAddComponent
-          }
+          },
+          {
+            path: 'list',
+            component: NewsbulletinsListComponent
+          },
+          {
+            path: 'list/status/:status',
+            component: NewsbulletinsListComponent
+          },
+          {
+            path: 'list/author/:authorId',
+            component: NewsbulletinsListComponent
+          },
         ]
       },
       // Users

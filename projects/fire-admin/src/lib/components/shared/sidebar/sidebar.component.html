@@ -68,6 +68,7 @@
         <span>{{ 'News Bulletins' | translate }}</span>
       </a>
       <div class="dropdown-menu dropdown-menu-small" [class.show]="style === 'expanded' && isActive(['posts', 'add'])">
+        <a class="dropdown-item " [routerLink]="navigation.getRouterLink('newsbulletins', 'list')" routerLinkActive="active">{{ 'List' | translate }}</a>
         <a class="dropdown-item " [routerLink]="navigation.getRouterLink('newsbulletins', 'add')" routerLinkActive="active">{{ 'Add' | translate }}</a>
       </div>
     </li>
