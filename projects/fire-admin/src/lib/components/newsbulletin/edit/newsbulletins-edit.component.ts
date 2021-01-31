@@ -48,7 +48,7 @@ export class NewsbulletinsEditComponent implements OnInit, AfterViewInit, OnDest
       this.route.params.subscribe((params: { id: string }) => {
         // console.log(params);
         this.newsbulletins.get(params.id).pipe(take(1)).toPromise().then((newsbulletin: Newsbulletin) => {
-          // console.log(post);
+          console.log(newsbulletin);
           if (newsbulletin) {
             this.id = newsbulletin.id;
             this.title = newsbulletin.title;
@@ -58,9 +58,7 @@ export class NewsbulletinsEditComponent implements OnInit, AfterViewInit, OnDest
             this.image = null;
             this.imageSrc = getEmptyImage();
             if (newsbulletin.imagePath) {
-              this.newsbulletins.getImageUrl(newsbulletin.imagePath as  string).pipe(take(1)).toPromise().then((imageUrl: string) => {
-                this.imageSrc = imageUrl;
-              });
+              this.imageSrc = (newsbulletin.imagePath as  string);
             }
             this.routeParamsChange.next();
             this.setCategoriesObservable();
@@ -109,14 +107,7 @@ export class NewsbulletinsEditComponent implements OnInit, AfterViewInit, OnDest
   }
 
   onCategoryCheck(category: Category, event: Event|any) {
-    // if (event.target.checked) {
-    //   this.checkedCategories.push(category.id);
-    // } else {
-    //   const index = this.checkedCategories.indexOf(category.id);
-    //   if (index !== -1) {
-    //     this.checkedCategories.splice(index, 1);
-    //   }
-    // }
+    
   }
 
   onImageChange(event: Event) {

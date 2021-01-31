@@ -117,11 +117,12 @@ export class NewsbulletinsService {
     return newsbulletinsObservable.pipe(mergeMap(async (newsbulletins: Newsbulletin[]) => {
       //posts.forEach((post: Post) => { // forEach loop doesn't seems to work well with async/await
       for (let newsbulletin of newsbulletins) {
-        console.log(newsbulletin);
+        // console.log(newsbulletin);
         // newsbulletin.imagePath = {
         //   path: newsbulletin.imagePath,
         //   url: newsbulletin.imagePath ? merge(of(getLoadingImage()), this.getImageUrl(newsbulletin.imagePath as string)) : of(getEmptyImage())
         // };
+        
         newsbulletin.author = newsbulletin.createdBy ? this.users.getFullName(newsbulletin.createdBy) : of(null);
       }
       return newsbulletins;
