@@ -67,6 +67,7 @@ import localeAr from '@angular/common/locales/ar';
 import { NewsbulletinsAddComponent } from './components/newsbulletin/add/newsbulletins-add.component';
 import { NewsbulletinsListComponent } from './components/newsbulletin/list/newsbulletins-list.component';
 import { NewsbulletinsService } from './services/collections/newsbulletin.service';
+import { NewsbulletinsEditComponent } from './components/newsbulletin/edit/newsbulletins-edit.component';
 registerLocaleData(localeFr);
 registerLocaleData(localeAr);
 
@@ -88,6 +89,7 @@ registerLocaleData(localeAr);
     PostsCategoriesComponent,
     NewsbulletinsAddComponent,
     NewsbulletinsListComponent,
+    NewsbulletinsEditComponent,
     SettingsComponent,
     LayoutComponent,
     AlertComponent,
