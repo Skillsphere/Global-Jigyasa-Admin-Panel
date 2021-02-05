@@ -23,7 +23,7 @@ export class NewsbulletinsEditComponent implements OnInit, AfterViewInit, OnDest
   addTime: Date;
   key_date: string;
   editor: any;
-  private status: NewsItemStatus;
+  status: NewsItemStatus;
   private image: File;
   imageSrc: string|ArrayBuffer;
   isSubmitButtonsDisabled: boolean = false;
@@ -58,6 +58,7 @@ export class NewsbulletinsEditComponent implements OnInit, AfterViewInit, OnDest
             this.image = null;
             this.imageSrc = getEmptyImage();
             if (newsbulletin.imagePath) {
+              this.isImageEmpty = false;
               this.imageSrc = (newsbulletin.imagePath as  string);
             }
             this.routeParamsChange.next();
@@ -112,7 +113,6 @@ export class NewsbulletinsEditComponent implements OnInit, AfterViewInit, OnDest
 
   onImageChange(event: Event) {
     this.image = (event.target as HTMLInputElement).files[0];
-    this.isImageEmpty = (this.image == null);
     const reader = new FileReader();
     reader.onload = () => {
       this.imageSrc = reader.result;
