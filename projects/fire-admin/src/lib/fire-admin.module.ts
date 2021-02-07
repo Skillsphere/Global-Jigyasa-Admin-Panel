@@ -68,6 +68,8 @@ import { NewsbulletinsAddComponent } from './components/newsbulletin/add/newsbul
 import { NewsbulletinsListComponent } from './components/newsbulletin/list/newsbulletins-list.component';
 import { NewsbulletinsService } from './services/collections/newsbulletin.service';
 import { NewsbulletinsEditComponent } from './components/newsbulletin/edit/newsbulletins-edit.component';
+import { DailyQuizListComponent } from './components/dailyquiz/list/dailyquiz-list.component';
+import { DailyQuizAddComponent } from './components/dailyquiz/add/dailyquiz-add.component';
 registerLocaleData(localeFr);
 registerLocaleData(localeAr);
 
@@ -83,6 +85,9 @@ registerLocaleData(localeAr);
     PagesListComponent,
     PagesAddComponent,
     PagesEditComponent,
+    DailyQuizListComponent,
+    DailyQuizAddComponent,
+    // DailyQuizEditComponent,
     PostsListComponent,
     PostsAddComponent,
     PostsEditComponent,

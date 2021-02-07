@@ -27,6 +27,8 @@ import { LogoutComponent } from './components/logout/logout.component';
 import { NewsbulletinsAddComponent } from './components/newsbulletin/add/newsbulletins-add.component';
 import { NewsbulletinsListComponent } from './components/newsbulletin/list/newsbulletins-list.component';
 import { NewsbulletinsEditComponent } from './components/newsbulletin/edit/newsbulletins-edit.component';
+import { DailyQuizAddComponent } from './components/dailyquiz/add/dailyquiz-add.component';
+import { DailyQuizListComponent } from './components/dailyquiz/list/dailyquiz-list.component';
 
 const routes: Routes = [
   {
@@ -87,6 +89,36 @@ const routes: Routes = [
             path: 'translate/:id',
             component: PagesTranslateComponent
           },
+          {
+            path: '**',
+            redirectTo: 'list'
+          }
+        ]
+      },
+      {
+        path: 'dailyquiz',
+        canActivate: [AuthGuard],
+        children: [
+          {
+            path: 'list',
+            component: DailyQuizListComponent
+          },
+          {
+            path: 'list/author/:authorId',
+            component: DailyQuizListComponent
+          },
+          {
+            path: 'add',
+            component: DailyQuizAddComponent
+          },
+          // {
+          //   path: 'edit/:id',
+          //   component: DailyQuizEditComponent
+          // },
+          // {
+          //   path: 'translate/:id',
+          //   component: DailyQuizTranslateComponent
+          // },
           {
             path: '**',
             redirectTo: 'list'
