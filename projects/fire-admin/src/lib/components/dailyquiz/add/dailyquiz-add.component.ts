@@ -7,6 +7,7 @@ import { I18nService } from '../../../services/i18n.service';
 import { PagesService } from '../../../services/collections/pages.service';
 import { AlertService } from '../../../services/alert.service';
 import { NavigationService } from '../../../services/navigation.service';
+import { initTextEditor } from '../../../helpers/posts.helper';
 
 @Component({
   selector: 'fa-pages-add',
@@ -16,6 +17,7 @@ import { NavigationService } from '../../../services/navigation.service';
 export class DailyQuizAddComponent implements OnInit {
 
   title: string;
+  editor: any;
   slug: string;
   language: string;
   languages: Language[];
@@ -37,6 +39,10 @@ export class DailyQuizAddComponent implements OnInit {
       return { label: key, value: PageBlockType[key] };
     });
     //this.addBlock();
+  }
+
+  ngAfterViewInit() {
+    this.editor = initTextEditor('#editor-container', 'Quiz Description');
   }
 
   onTitleInput() {
