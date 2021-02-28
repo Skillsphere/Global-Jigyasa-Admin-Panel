@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { slugify } from '../../../helpers/functions.helper';
-import { Language } from '../../../models/language.model';
 import { SettingsService } from '../../../services/settings.service';
 import { PageBlock, PageBlockType } from '../../../models/collections/page.model';
 import { I18nService } from '../../../services/i18n.service';
-import { PagesService } from '../../../services/collections/pages.service';
 import { AlertService } from '../../../services/alert.service';
 import { NavigationService } from '../../../services/navigation.service';
 import { initTextEditor } from '../../../helpers/posts.helper';
+import { DailyQuizService } from '../../../services/collections/dailyquiz.service';
 
 @Component({
   selector: 'fa-pages-add',
@@ -18,23 +17,18 @@ export class DailyQuizAddComponent implements OnInit {
 
   title: string;
   editor: any;
-  slug: string;
-  language: string;
-  languages: Language[];
   blocks: PageBlock[] = [];
   blockTypes: { label: string, value: PageBlockType }[] = [];
 
   constructor(
     private settings: SettingsService,
     private i18n: I18nService,
-    private pages: PagesService,
+    private quiz: DailyQuizService,
     private alert: AlertService,
     private navigation: NavigationService
   ) { }
 
   ngOnInit() {
-    this.languages = this.settings.getActiveSupportedLanguages();
-    this.language = this.languages[0].key;
     this.blockTypes = Object.keys(PageBlockType).map((key: string) => {
       return { label: key, value: PageBlockType[key] };
     });
@@ -46,7 +40,7 @@ export class DailyQuizAddComponent implements OnInit {
   }
 
   onTitleInput() {
-    this.slug = slugify(this.title).substr(0, 50);
+    
   }
 
   addBlock(event?: Event) {
@@ -74,32 +68,19 @@ export class DailyQuizAddComponent implements OnInit {
       addButon.isLoading = false;
     };
     startLoading();
-    // Check if page slug is duplicated
-    this.pages.isSlugDuplicated(this.slug, this.language).then((duplicated: boolean) => {
-      if (duplicated) {
-        // Warn user about page slug
-        this.alert.warning(this.i18n.get('PageSlugAlreadyExists'), false, 5000);
-        stopLoading();
-      } else {
-        // Add page
-        this.pages.add({
-          lang: this.language,
-          title: this.title,
-          slug: this.slug,
-          blocks: this.pages.formatBlocks(this.blocks)
-        }).then(() => {
-          this.alert.success(this.i18n.get('PageAdded'), false, 5000, true);
-          this.navigation.redirectTo('pages', 'list');
-        }).catch((error: Error) => {
-          this.alert.error(error.message);
-        }).finally(() => {
-          stopLoading();
-        });
-      }
+    
+    this.quiz.add({
+      lang: this.language,
+      title: this.title,
+      slug: this.slug,
+      blocks: this.pages.formatBlocks(this.blocks)
+    }).then(() => {
+      this.alert.success(this.i18n.get('PageAdded'), false, 5000, true);
+      this.navigation.redirectTo('pages', 'list');
     }).catch((error: Error) => {
       this.alert.error(error.message);
+    }).finally(() => {
       stopLoading();
     });
   }
-
 }

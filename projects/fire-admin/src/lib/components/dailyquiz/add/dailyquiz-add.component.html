@@ -20,7 +20,7 @@
         <div class="card-footer border-top d-flex">
           <div class="my-auto ml-auto">
             <button class="btn btn-sm btn-white" (click)="addBlock($event)">
-              <i class="material-icons">add</i> {{ 'AddBlock' | translate }}
+              <i class="material-icons">add</i> {{ 'Add Question' | translate }}
             </button>
           </div>
         </div>
@@ -28,14 +28,14 @@
       <!-- / Add New Page Form -->
       <div class="row">
         <div class="col">
-          <span class="file-manager__group-title text-uppercase text-light">{{ 'PageBlocks' | translate }}</span>
+          <span class="file-manager__group-title text-uppercase text-light">{{ 'Quiz Questions' | translate }}</span>
         </div>
       </div>
       <div class="row">
         <div *ngFor="let block of blocks; let i = index" class="col-lg-6">
           <div class="card card-small mb-3">
             <div class="card-header border-bottom d-flex" #blockCardHeader>
-              <h6 class="m-0 overflow-hidden">{{ block.key?.length ? block.key : ('PageBlock' | translate) }}</h6>
+              <h6 class="m-0 overflow-hidden">{{ block.key?.length ? block.key : ('Quiz Question' | translate) }}</h6>
               <span class="ml-auto cursor-pointer" title="{{ 'RemoveBlock' | translate }}" (click)="removeBlock(i)">
                 <i class="material-icons">delete_outline</i>
               </span>
@@ -44,12 +44,11 @@
               </span>
             </div>
             <div class="card-body" [class.d-none]="blockCardHeader.isToggled">
-              <input class="form-control mb-3" type="text" placeholder="{{ 'BlockName' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
-              <select class="form-control custom-select mb-3" [(ngModel)]="block.type" name="block-type">
-                <option value="" disabled>{{ 'BlockType' | translate }}</option>
-                <option *ngFor="let type of blockTypes" [value]="type.value">{{ type.label | translate }}</option>
-              </select>
-              <textarea class="form-control" style="min-height: 100px" placeholder="{{ 'BlockContent' | translate }}" [(ngModel)]="block.content" name="block-content"></textarea>
+              <textarea class="form-control mb-3" style="min-height: 50px" placeholder="{{ 'Enter the question here' | translate }}" [(ngModel)]="block.content" name="block-content"></textarea>
+              <input class="form-control mb-3" type="text" placeholder="{{ 'Answer Option A' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
+              <input class="form-control mb-3" type="text" placeholder="{{ 'Answer Option B' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
+              <input class="form-control mb-3" type="text" placeholder="{{ 'Answer Option C' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
+              <input class="form-control" type="text" placeholder="{{ 'Answer Option D' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
             </div>
           </div>
         </div>
@@ -65,22 +64,26 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item p-3">
               <span class="d-flex mb-2">
-                <i class="material-icons mr-1 mt-1">translate</i><span class="mr-1 mt-1">{{ 'PageLanguage' | translate }}:</span>
-                <select class="custom-select col-md-7 ml-auto" [(ngModel)]="language" name="language">
-                  <option *ngFor="let lang of languages" [value]="lang.key">{{ lang.label | translate }}</option>
-                </select>
+                <i class="material-icons mr-1 mt-1">calendar_today</i><span class="mr-1 mt-1">{{ 'Date' | translate }}:</span>
+                <input type="date" class="form-control col-md-8 ml-auto" [(ngModel)]="key_date" name="date">
               </span>
-              <span class="d-flex mb-2">
-                <i class="material-icons mr-1 mt-1">link</i><span class="mr-1 mt-1">{{ 'PageSlug' | translate }}:</span>
-                <input type="text" class="form-control col-md-7 ml-auto" [(ngModel)]="slug" name="slug">
+            </li>
+            <li class="list-group-item p-3">
+              <span class="d-flex">
+                <div class="edit-user-details__avatar rounded-0" (click)="postImage.click()">
+                  <img [src]="imageSrc | escapeUrl" alt="Post image">
+                  <label class="edit-user-details__avatar__change rounded-0">
+                    <i class="material-icons mr-1">add_a_photo</i>
+                    <input type="file" accept="image/*" class="d-none" (change)="onImageChange($event)" #postImage>
+                  </label>
+                </div>
               </span>
             </li>
             <li class="list-group-item d-flex px-3 pt-0">
               <button class="btn btn-sm btn-accent m-auto" [disabled]="!title?.length || !slug?.length || addButton.isLoading" (click)="addPage($event)" #addButton>
-                <i class="material-icons">note_add</i> {{ 'AddPage' | translate }} <i *ngIf="addButton.isLoading" class="fas fa-circle-notch fa-spin ml-1"></i>
+                <i class="material-icons">note_add</i> {{ 'Add Quiz' | translate }} <i *ngIf="addButton.isLoading" class="fas fa-circle-notch fa-spin ml-1"></i>
               </button>
             </li>
-            
           </ul>
         </div>
       </div>
