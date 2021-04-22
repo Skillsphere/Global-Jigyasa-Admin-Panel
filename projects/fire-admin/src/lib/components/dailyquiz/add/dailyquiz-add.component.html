@@ -35,7 +35,7 @@
         <div *ngFor="let block of blocks; let i = index" class="col-lg-6">
           <div class="card card-small mb-3">
             <div class="card-header border-bottom d-flex" #blockCardHeader>
-              <h6 class="m-0 overflow-hidden">{{ block.key?.length ? block.key : ('Quiz Question' | translate) }}</h6>
+              <h6 class="m-0 overflow-hidden">Question {{ i+1 }}</h6>
               <span class="ml-auto cursor-pointer" title="{{ 'RemoveBlock' | translate }}" (click)="removeBlock(i)">
                 <i class="material-icons">delete_outline</i>
               </span>
