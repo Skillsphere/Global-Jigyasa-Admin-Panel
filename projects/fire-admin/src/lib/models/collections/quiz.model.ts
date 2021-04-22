@@ -1,7 +1,6 @@
-import { DocumentTranslation } from './document-translation';
 import { Observable } from 'rxjs';
 
-export interface Page {
+export interface Quiz {
   id?: string;
   title: string;
   description: string;
@@ -22,7 +21,7 @@ export interface QuestionBlock {
   question: string;
   answerType: number;
   imageUrl?: File|string|Observable<string>|{ path: string|any, url: string|Observable<string> };
-  answerOptions: AnswerOption[];
+  answerOptions?: AnswerOption[];
 }
 
 export interface AnswerOption {

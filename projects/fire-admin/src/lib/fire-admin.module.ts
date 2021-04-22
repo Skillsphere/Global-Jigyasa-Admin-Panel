@@ -70,6 +70,8 @@ import { NewsbulletinsService } from './services/collections/newsbulletin.servic
 import { NewsbulletinsEditComponent } from './components/newsbulletin/edit/newsbulletins-edit.component';
 import { DailyQuizListComponent } from './components/dailyquiz/list/dailyquiz-list.component';
 import { DailyQuizAddComponent } from './components/dailyquiz/add/dailyquiz-add.component';
+import { DailyQuizService } from './services/collections/dailyquiz.service';
+
 registerLocaleData(localeFr);
 registerLocaleData(localeAr);
 
@@ -142,6 +144,7 @@ registerLocaleData(localeAr);
     CategoriesService,
     PostsService,
     NewsbulletinsService,
+    DailyQuizService,
     EscapeUrlPipe,
     StorageService,
     UsersService,

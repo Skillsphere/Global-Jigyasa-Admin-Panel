@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { slugify } from '../../../helpers/functions.helper';
 import { SettingsService } from '../../../services/settings.service';
-import { PageBlock, PageBlockType } from '../../../models/collections/page.model';
 import { I18nService } from '../../../services/i18n.service';
 import { AlertService } from '../../../services/alert.service';
 import { NavigationService } from '../../../services/navigation.service';
 import { initTextEditor } from '../../../helpers/posts.helper';
 import { DailyQuizService } from '../../../services/collections/dailyquiz.service';
+import { QuestionBlock } from '../../../models/collections/quiz.model';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'fa-pages-add',
@@ -17,8 +17,12 @@ export class DailyQuizAddComponent implements OnInit {
 
   title: string;
   editor: any;
-  blocks: PageBlock[] = [];
-  blockTypes: { label: string, value: PageBlockType }[] = [];
+  blocks: QuestionBlock[] = [];
+  description: string;
+  key_date: string;
+  imageUrl: string | File | Observable<string> | { path: any; url: string | Observable<string>; };
+  totalTime: number;
+  // blockTypes: { label: string, value: PageBlockType }[] = [];
 
   constructor(
     private settings: SettingsService,
@@ -29,9 +33,9 @@ export class DailyQuizAddComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.blockTypes = Object.keys(PageBlockType).map((key: string) => {
-      return { label: key, value: PageBlockType[key] };
-    });
+    // this.blockTypes = Object.keys(PageBlockType).map((key: string) => {
+    //   return { label: key, value: PageBlockType[key] };
+    // });
     //this.addBlock();
   }
 
@@ -45,9 +49,8 @@ export class DailyQuizAddComponent implements OnInit {
 
   addBlock(event?: Event) {
     this.blocks.push({
-      name: '',
-      type: PageBlockType.Text,
-      content: ''
+      question: '',
+      answerType: 1
     });
   }
 
@@ -55,8 +58,8 @@ export class DailyQuizAddComponent implements OnInit {
     this.blocks.splice(index, 1);
   }
 
-  onBlockNameInput(block: PageBlock) {
-    block.key = slugify(block.name);
+  onBlockNameInput(block: QuestionBlock) {
+    // block.key = slugify(block.name);
   }
 
   addPage(event: Event) {
@@ -70,10 +73,13 @@ export class DailyQuizAddComponent implements OnInit {
     startLoading();
     
     this.quiz.add({
-      lang: this.language,
       title: this.title,
-      slug: this.slug,
-      blocks: this.pages.formatBlocks(this.blocks)
+      description: this.description,
+      key_date: this.key_date,
+      imageUrl: this.imageUrl,
+      totalTime: this.totalTime,
+      isActive: true,
+      // blocks: this.quiz.formatBlocks(this.blocks)
     }).then(() => {
       this.alert.success(this.i18n.get('PageAdded'), false, 5000, true);
       this.navigation.redirectTo('pages', 'list');
