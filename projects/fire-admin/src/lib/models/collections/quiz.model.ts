@@ -17,10 +17,11 @@ export interface Quiz {
 }
 
 export interface QuestionBlock {
-  key?: string;
   question: string;
   answerType: number;
   imageUrl?: File|string|Observable<string>|{ path: string|any, url: string|Observable<string> };
+  image?: File;
+  imageSrc: string|ArrayBuffer;
   answerOptions?: AnswerOption[];
 }
 

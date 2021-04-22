@@ -44,10 +44,19 @@
               </span>
             </div>
             <div class="card-body" [class.d-none]="blockCardHeader.isToggled">
-              <textarea class="form-control mb-3" style="min-height: 50px" placeholder="{{ 'Enter the question here' | translate }}" [(ngModel)]="block.content" name="block-content"></textarea>
-              <input class="form-control mb-3" type="text" placeholder="{{ 'Answer Option A' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
-              <input class="form-control mb-3" type="text" placeholder="{{ 'Answer Option B' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
-              <input class="form-control mb-3" type="text" placeholder="{{ 'Answer Option C' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
+              <span class="d-flex">
+                <div class="edit-user-details__avatar rounded-0" (click)="postImage.click()">
+                  <img [src]="block.imageSrc" alt="Question Image">
+                  <label class="edit-user-details__avatar__change rounded-0">
+                    <i class="material-icons mr-1">add_a_photo</i>
+                    <input type="file" accept="image/*" class="d-none" (change)="onQuestionImageChange($event, i)">
+                  </label>
+                </div>
+              </span>
+              <textarea class="form-control mb-2 mt-2" style="min-height: 50px" placeholder="{{ 'Enter the question here' | translate }}" [(ngModel)]="block.content" name="block-content"></textarea>
+              <input class="form-control mb-2" type="text" placeholder="{{ 'Answer Option A' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
+              <input class="form-control mb-2" type="text" placeholder="{{ 'Answer Option B' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
+              <input class="form-control mb-2" type="text" placeholder="{{ 'Answer Option C' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
               <input class="form-control" type="text" placeholder="{{ 'Answer Option D' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
             </div>
           </div>
@@ -69,12 +78,13 @@
               </span>
             </li>
             <li class="list-group-item p-3">
+              <i class="material-icons mr-1 mt-1">filter_vintage</i><span class="mr-1 mt-1">Quiz Banner Image</span>
               <span class="d-flex">
                 <div class="edit-user-details__avatar rounded-0" (click)="postImage.click()">
                   <img [src]="imageSrc | escapeUrl" alt="Post image">
                   <label class="edit-user-details__avatar__change rounded-0">
                     <i class="material-icons mr-1">add_a_photo</i>
-                    <input type="file" accept="image/*" class="d-none" (change)="onImageChange($event)" #postImage>
+                    <input type="file" accept="image/*" class="d-none" (change)="onImageChange($event)" #quizImage>
                   </label>
                 </div>
               </span>
