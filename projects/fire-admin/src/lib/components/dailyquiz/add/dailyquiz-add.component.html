@@ -14,6 +14,7 @@
         <div class="card-body">
           <form class="add-new-page">
             <input class="form-control form-control-lg mb-3" type="text" placeholder="{{ 'Quiz Title' | translate }}" [(ngModel)]="title" name="title" (input)="onTitleInput()">
+            <input class="form-control form-control-lg mb-3" type="text" placeholder="{{ 'Push notification message' | translate }}" [(ngModel)]="pushMessage" name="notification-message" (input)="onNotificationInput()">
             <div id="editor-container" class="add-new-post__editor mb-1"></div>
           </form>
         </div>
@@ -53,11 +54,13 @@
                   </label>
                 </div>
               </span>
-              <textarea class="form-control mb-2 mt-2" style="min-height: 50px" placeholder="{{ 'Enter the question here' | translate }}" [(ngModel)]="block.content" name="block-content"></textarea>
-              <input class="form-control mb-2" type="text" placeholder="{{ 'Answer Option A' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
-              <input class="form-control mb-2" type="text" placeholder="{{ 'Answer Option B' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
-              <input class="form-control mb-2" type="text" placeholder="{{ 'Answer Option C' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
-              <input class="form-control" type="text" placeholder="{{ 'Answer Option D' | translate }}" [(ngModel)]="block.name" name="block-name" (input)="onBlockNameInput(block)">
+              <div>
+                <textarea class="form-control mb-2 mt-2" style="min-height: 50px" placeholder="{{ 'Enter the question here' | translate }}" [(ngModel)]="block.question" name="question"></textarea>
+                <input class="form-control mb-2" type="text" placeholder="{{ 'correct answer' | translate }}" [(ngModel)]="block.answerOptions[0].title" name="answer-option-a">
+                <input class="form-control mb-2" type="text" placeholder="{{ 'answer options b' | translate }}" [(ngModel)]="block.answerOptions[1].title" name="answer-option-b">
+                <input class="form-control mb-2" type="text" placeholder="{{ 'answer options c' | translate }}" [(ngModel)]="block.answerOptions[2].title" name="answer-option-c">
+                <input class="form-control" type="text" placeholder="{{ 'answer options d' | translate }}" [(ngModel)]="block.answerOptions[3].title" name="answer-option-d">
+              </div>
             </div>
           </div>
         </div>
@@ -76,6 +79,10 @@
                 <i class="material-icons mr-1 mt-1">calendar_today</i><span class="mr-1 mt-1">{{ 'Date' | translate }}:</span>
                 <input type="date" class="form-control col-md-8 ml-auto" [(ngModel)]="key_date" name="date">
               </span>
+              <span class="d-flex mb-2">
+                <i class="material-icons mr-1 mt-1">timer</i><span class="mr-1 mt-1">{{ 'Time' | translate }}:</span>
+                <input type="text" placeholder="time in mins" class="form-control col-md-8 ml-auto" [(ngModel)]="totalTime" name="total-time">
+              </span>
             </li>
             <li class="list-group-item p-3">
               <i class="material-icons mr-1 mt-1">filter_vintage</i><span class="mr-1 mt-1">Quiz Banner Image</span>
@@ -90,7 +97,7 @@
               </span>
             </li>
             <li class="list-group-item d-flex px-3 pt-0">
-              <button class="btn btn-sm btn-accent m-auto" [disabled]="!title?.length || !slug?.length || addButton.isLoading" (click)="addPage($event)" #addButton>
+              <button class="btn btn-sm btn-accent m-auto" [disabled]="!title?.length || addButton.isLoading" (click)="addQuiz($event)" #addButton>
                 <i class="material-icons">note_add</i> {{ 'Add Quiz' | translate }} <i *ngIf="addButton.isLoading" class="fas fa-circle-notch fa-spin ml-1"></i>
               </button>
             </li>

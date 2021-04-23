@@ -17,6 +17,7 @@ import { getEmptyImage } from '../../../helpers/assets.helper';
 export class DailyQuizAddComponent implements OnInit {
 
   title: string;
+  pushMessage: string;
   editor: any;
   blocks: QuestionBlock[] = [];
   description: string;
@@ -39,6 +40,7 @@ export class DailyQuizAddComponent implements OnInit {
     this.imageSrc = getEmptyImage();
     this.image = null;
     this.key_date = new Date().toISOString().slice(0, 10);
+    this.totalTime = 10;
   }
 
   ngAfterViewInit() {
@@ -49,11 +51,33 @@ export class DailyQuizAddComponent implements OnInit {
     
   }
 
+  onNotificationInput() {
+    
+  }
+
   addBlock(event?: Event) {
     this.blocks.push({
       question: '',
       answerType: 1,
-      imageSrc: getEmptyImage()
+      imageSrc: getEmptyImage(),
+      answerOptions: [
+        {
+          title: '',
+          isAnswer: true,
+        },
+        {
+          title: '',
+          isAnswer: false,
+        },
+        {
+          title: '',
+          isAnswer: false,
+        },
+        {
+          title: '',
+          isAnswer: false,
+        },
+      ]
     });
   }
 
@@ -80,7 +104,7 @@ export class DailyQuizAddComponent implements OnInit {
     reader.readAsDataURL(this.image);
   }
 
-  addPage(event: Event) {
+  addQuiz(event: Event) {
     const addButon = event.target as any;
     const startLoading = () => {
       addButon.isLoading = true;
@@ -89,22 +113,25 @@ export class DailyQuizAddComponent implements OnInit {
       addButon.isLoading = false;
     };
     startLoading();
-    
-    // this.quiz.add({
-    //   title: this.title,
-    //   description: this.description,
-    //   key_date: this.key_date,
-    //   imageUrl: this.imageUrl,
-    //   totalTime: this.totalTime,
-    //   isActive: true,
-    //   // blocks: this.quiz.formatBlocks(this.blocks)
-    // }).then(() => {
-    //   this.alert.success(this.i18n.get('PageAdded'), false, 5000, true);
-    //   this.navigation.redirectTo('pages', 'list');
-    // }).catch((error: Error) => {
-    //   this.alert.error(error.message);
-    // }).finally(() => {
-    //   stopLoading();
-    // });
+    console.log("entered here");
+    this.quiz.add({
+      title: this.title,
+      description: 'this.description',
+      key_date: this.key_date,
+      imageUrl: 'this.imageUrl',
+      totalTime: this.totalTime,
+      isActive: true,
+      blocks: this.blocks
+    }).then(() => {
+      console.log("success");
+      this.alert.success(this.i18n.get('PageAdded'), false, 5000, true);
+      this.navigation.redirectTo('pages', 'list');
+    }).catch((error: Error) => {
+      console.log(error.message);
+      this.alert.error(error.message);
+    }).finally(() => {
+      console.log("finally");
+      stopLoading();
+    });
   }
 }

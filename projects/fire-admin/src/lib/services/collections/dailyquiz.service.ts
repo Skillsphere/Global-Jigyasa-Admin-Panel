@@ -4,7 +4,6 @@ import { UsersService } from './users.service';
 import { now } from '../../helpers/functions.helper';
 import { mergeMap, take } from 'rxjs/operators';
 import { SettingsService } from '../settings.service';
-import { Language } from '../../models/language.model';
 import { Observable, of } from 'rxjs';
 import { QueryFn } from '@angular/fire/firestore';
 import { Quiz, QuestionBlock } from '../../models/collections/quiz.model';
@@ -45,7 +44,6 @@ export class DailyQuizService {
       imageUrl: data.imageUrl,
       totalTime: data.totalTime,
       isActive: true,
-      blocks: data.blocks || {},
       createdAt: now(), // timestamp
       updatedAt: null,
       createdBy: this.db.currentUser.id,
@@ -54,8 +52,18 @@ export class DailyQuizService {
 
     return new Promise<void>((resolve, reject) => {
       this.db.addDocument('quizes', quiz).then((doc: any) => {
-        //TODO: Implement this
-        resolve();
+        // for (let question in data.blocks) {
+        //   this.db.addDocument(`quizes/${doc.id}/quiz_questions`, question).then((ques: any) => {
+        //     resolve();
+        //   }).catch((error: Error) => {
+        //     reject(error);
+        //   })
+        // }
+        this.db.addDocument(`quizes/${doc.id}/quiz_questions`, quiz).then((ques: any) => {
+          resolve();
+        }).catch((error: Error) => {
+          reject(error);
+        })
       }).catch((error: Error) => {
         reject(error);
       });

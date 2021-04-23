@@ -8,7 +8,7 @@ export interface Quiz {
   imageUrl?: File|string|Observable<string>|{ path: string|any, url: string|Observable<string> };
   isActive: boolean;
   totalTime: number;
-  blocks?: { [key: string]: QuestionBlock };
+  blocks?: QuestionBlock[];
   createdAt?: number;
   updatedAt?: number;
   createdBy?: string;
@@ -20,14 +20,12 @@ export interface QuestionBlock {
   question: string;
   answerType: number;
   imageUrl?: File|string|Observable<string>|{ path: string|any, url: string|Observable<string> };
-  image?: File;
   imageSrc: string|ArrayBuffer;
-  answerOptions?: AnswerOption[];
+  answerOptions: AnswerOption[];
 }
 
 export interface AnswerOption {
   title: string;
-  key: string;
   isAnswer: boolean;
   imageUrl?: File|string|Observable<string>|{ path: string|any, url: string|Observable<string> };
 }
