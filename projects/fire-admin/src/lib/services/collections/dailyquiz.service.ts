@@ -6,7 +6,7 @@ import { mergeMap, take } from 'rxjs/operators';
 import { SettingsService } from '../settings.service';
 import { Observable, of } from 'rxjs';
 import { QueryFn } from '@angular/fire/firestore';
-import { Quiz, QuestionBlock } from '../../models/collections/quiz.model';
+import { Quiz, QuestionBlock, AnswerOption } from '../../models/collections/quiz.model';
 
 @Injectable()
 export class DailyQuizService {
@@ -41,7 +41,7 @@ export class DailyQuizService {
       title: data.title,
       description: data.description,
       key_date: data.key_date,
-      imageUrl: data.imageUrl,
+      imageUrl: 'data.imageUrl',
       totalTime: data.totalTime,
       isActive: true,
       createdAt: now(), // timestamp
@@ -50,18 +50,32 @@ export class DailyQuizService {
       updatedBy: null
     };
 
+    const questions = data.blocks.map((q) => {
+      var data: QuestionBlock = {
+        question: q.question,
+        answerType: q.answerType,
+        imageUrl: q.imageUrl
+      }
+      return data;
+    });
+
+    const answerOptions = data.blocks.map((q) => q.answerOptions.map((ans) => {
+      var data: AnswerOption = {
+        title: ans.title,
+        isAnswer: ans.isAnswer,
+        imageUrl: ans.imageUrl
+      }
+      return data;
+    }));
+
+    console.log(answerOptions);
+    
     return new Promise<void>((resolve, reject) => {
       this.db.addDocument('quizes', quiz).then((doc: any) => {
-        // for (let question in data.blocks) {
-        //   this.db.addDocument(`quizes/${doc.id}/quiz_questions`, question).then((ques: any) => {
-        //     resolve();
-        //   }).catch((error: Error) => {
-        //     reject(error);
-        //   })
-        // }
-        this.db.addDocument(`quizes/${doc.id}/quiz_questions`, quiz).then((ques: any) => {
+        this.db.addQuizQuestions(`quizes/${doc.id}/quiz_questions`, questions, answerOptions).then((ques: any) => {
           resolve();
         }).catch((error: Error) => {
+          console.log(error);
           reject(error);
         })
       }).catch((error: Error) => {

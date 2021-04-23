@@ -117,6 +117,65 @@ export class DatabaseService {
   }
 
   /**
+   * Add batch documents
+   *
+   * @param collectionPath
+   * @param data
+   * @param documentPath
+   */
+  addBatchDocument(collectionPath: string, data: any[], documentPath?: string): Promise<any> {
+    const batch = this.db.firestore.batch();
+
+    if (documentPath && documentPath.length) {
+      this.afterUserRoleCheck(() => {
+        data.forEach((doc) => {
+          var docRef = this.db.collection(collectionPath).doc(documentPath).ref; //automatically generate unique id
+          batch.set(docRef, doc);
+        })
+      });
+    } else {
+      this.afterUserRoleCheck(() => {
+        console.log(data);
+        data.forEach((doc, index) => {
+          console.log(doc);
+          console.log(collectionPath);
+          var docRef = this.db.collection(collectionPath).doc(`${index}`).ref; //automatically generate unique id
+          batch.set(docRef, doc);
+        })
+      });
+    }
+
+    return batch.commit();
+  }
+
+  /**
+   * Add quiz questions
+   *
+   * @param collectionPath
+   * @param data
+   * @param documentPath
+   */
+   addQuizQuestions(collectionPath: string, questions: any[], answerOptions: any[]): Promise<any> {
+    const batch = this.db.firestore.batch();
+    
+    this.afterUserRoleCheck(() => {
+      questions.forEach((doc, index) => {
+        console.log(doc);
+        console.log(collectionPath);
+        var questionRef = this.db.collection(collectionPath).doc(`${index}`).ref;
+        batch.set(questionRef, doc);
+        
+        answerOptions[index].forEach((option, j) => {
+          var ansOptionRef = this.db.collection(`${collectionPath}/${index}/answers_of_questions`).doc(`${j}`).ref;
+          batch.set(ansOptionRef, option);
+        });
+      })
+    });
+
+    return batch.commit();
+  }
+
+  /**
    * Set document
    *
    * @param collectionPath

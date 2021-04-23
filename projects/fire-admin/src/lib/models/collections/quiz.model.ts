@@ -20,8 +20,7 @@ export interface QuestionBlock {
   question: string;
   answerType: number;
   imageUrl?: File|string|Observable<string>|{ path: string|any, url: string|Observable<string> };
-  imageSrc: string|ArrayBuffer;
-  answerOptions: AnswerOption[];
+  answerOptions?: AnswerOption[];
 }
 
 export interface AnswerOption {
