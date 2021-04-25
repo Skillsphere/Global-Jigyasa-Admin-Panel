@@ -46,20 +46,39 @@
             </div>
             <div class="card-body" [class.d-none]="blockCardHeader.isToggled">
               <span class="d-flex">
-                <div class="edit-user-details__avatar rounded-0" (click)="postImage.click()">
-                  <img [src]="block.imageSrc" alt="Question Image">
+                <div class="edit-user-details__avatar rounded-0" >
+                  <img [src]="questionImageSrc[i]" alt="Question Image">
                   <label class="edit-user-details__avatar__change rounded-0">
                     <i class="material-icons mr-1">add_a_photo</i>
-                    <input type="file" accept="image/*" class="d-none" (change)="onQuestionImageChange($event, i)">
+                    <input type="file" accept="image/*" class="d-none" (change)="onQuestionImageChange($event, i)" #questionImage>
                   </label>
                 </div>
               </span>
               <div>
                 <textarea class="form-control mb-2 mt-2" style="min-height: 50px" placeholder="{{ 'Enter the question here' | translate }}" [(ngModel)]="block.question" name="question"></textarea>
-                <input class="form-control mb-2" type="text" placeholder="{{ 'correct answer' | translate }}" [(ngModel)]="block.answerOptions[0].title" name="answer-option-a">
-                <input class="form-control mb-2" type="text" placeholder="{{ 'answer options b' | translate }}" [(ngModel)]="block.answerOptions[1].title" name="answer-option-b">
-                <input class="form-control mb-2" type="text" placeholder="{{ 'answer options c' | translate }}" [(ngModel)]="block.answerOptions[2].title" name="answer-option-c">
-                <input class="form-control" type="text" placeholder="{{ 'answer options d' | translate }}" [(ngModel)]="block.answerOptions[3].title" name="answer-option-d">
+                <input class="form-control mb-2" type="text" placeholder="{{ 'answer option a' | translate }}" [(ngModel)]="block.answerOptions[0].title" name="answer-option-a">
+                <input class="form-control mb-2" type="text" placeholder="{{ 'answer option b' | translate }}" [(ngModel)]="block.answerOptions[1].title" name="answer-option-b">
+                <input class="form-control mb-2" type="text" placeholder="{{ 'answer option c' | translate }}" [(ngModel)]="block.answerOptions[2].title" name="answer-option-c">
+                <input class="form-control mb-2" type="text" placeholder="{{ 'answer option d' | translate }}" [(ngModel)]="block.answerOptions[3].title" name="answer-option-d">
+                <div style="display: flex; justify-content: space-between;">
+                  <span><label class="form-check-label" for="radio-option-1">Correct Option:</label></span>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="radioOptions-q{{i}}" id="radio-option-q{{i}}" value="1" checked (click)="toggleAnswerOption($event, i, 0)">
+                    <label class="form-check-label" for="radio-option-1">A</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="radioOptions-q{{i}}" id="radio-option-q{{i}}" value="2" (click)="toggleAnswerOption($event, i, 1)">
+                    <label class="form-check-label" for="radio-option-2">B</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="radioOptions-q{{i}}" id="radio-option-q{{i}}" value="3" (click)="toggleAnswerOption($event, i, 2)">
+                    <label class="form-check-label" for="radio-option-1">C</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="radioOptions-q{{i}}" id="radio-option-q{{i}}" value="4" (click)="toggleAnswerOption($event, i, 3)">
+                    <label class="form-check-label" for="radio-option-1">D</label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -87,7 +106,7 @@
             <li class="list-group-item p-3">
               <i class="material-icons mr-1 mt-1">filter_vintage</i><span class="mr-1 mt-1">Quiz Banner Image</span>
               <span class="d-flex">
-                <div class="edit-user-details__avatar rounded-0" (click)="postImage.click()">
+                <div class="edit-user-details__avatar rounded-0" (click)="quizImage.click()">
                   <img [src]="imageSrc | escapeUrl" alt="Post image">
                   <label class="edit-user-details__avatar__change rounded-0">
                     <i class="material-icons mr-1">add_a_photo</i>

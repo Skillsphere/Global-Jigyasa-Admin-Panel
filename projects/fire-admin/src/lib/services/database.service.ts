@@ -158,21 +158,20 @@ export class DatabaseService {
    addQuizQuestions(collectionPath: string, questions: any[], answerOptions: any[]): Promise<any> {
     const batch = this.db.firestore.batch();
     
-    this.afterUserRoleCheck(() => {
+    return this.afterUserRoleCheck(() => {
       questions.forEach((doc, index) => {
         console.log(doc);
         console.log(collectionPath);
         var questionRef = this.db.collection(collectionPath).doc(`${index}`).ref;
         batch.set(questionRef, doc);
         
-        answerOptions[index].forEach((option, j) => {
+        answerOptions[index].forEach((option: any, j: number) => {
           var ansOptionRef = this.db.collection(`${collectionPath}/${index}/answers_of_questions`).doc(`${j}`).ref;
           batch.set(ansOptionRef, option);
         });
       })
+      return batch.commit();
     });
-
-    return batch.commit();
   }
 
   /**

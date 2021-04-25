@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
 import { DatabaseService } from '../database.service';
 import { UsersService } from './users.service';
-import { now } from '../../helpers/functions.helper';
+import { guid, isFile, now } from '../../helpers/functions.helper';
 import { mergeMap, take } from 'rxjs/operators';
 import { SettingsService } from '../settings.service';
 import { Observable, of } from 'rxjs';
 import { QueryFn } from '@angular/fire/firestore';
 import { Quiz, QuestionBlock, AnswerOption } from '../../models/collections/quiz.model';
+import { StorageService } from '../storage.service';
 
 @Injectable()
 export class DailyQuizService {
 
   constructor(
     protected db: DatabaseService,
+    private storage: StorageService,
     private settings: SettingsService,
     private users: UsersService
   ) {
@@ -40,8 +42,9 @@ export class DailyQuizService {
     const quiz: Quiz = {
       title: data.title,
       description: data.description,
+      push_notification_message: data.push_notification_message,
       key_date: data.key_date,
-      imageUrl: 'data.imageUrl',
+      imageUrl: null,
       totalTime: data.totalTime,
       isActive: true,
       createdAt: now(), // timestamp
@@ -54,26 +57,46 @@ export class DailyQuizService {
       var data: QuestionBlock = {
         question: q.question,
         answerType: q.answerType,
-        imageUrl: q.imageUrl
+        imageUrl: null
       }
       return data;
     });
 
-    const answerOptions = data.blocks.map((q) => q.answerOptions.map((ans) => {
+    const answerOptions = data.blocks.map((q, index) => q.answerOptions.map((ans) => {
       var data: AnswerOption = {
         title: ans.title,
         isAnswer: ans.isAnswer,
-        imageUrl: ans.imageUrl
+        key: `${index}`,
+        imageUrl: null
       }
       return data;
     }));
 
+    console.log(questions);
     console.log(answerOptions);
     
     return new Promise<void>((resolve, reject) => {
       this.db.addDocument('quizes', quiz).then((doc: any) => {
-        this.db.addQuizQuestions(`quizes/${doc.id}/quiz_questions`, questions, answerOptions).then((ques: any) => {
-          resolve();
+        this.db.addQuizQuestions(`quizes/${doc.id}/quiz_questions`, questions, answerOptions).then(() => {
+          // Quiz Image upload begins here
+          const imageName = guid() + '.' + (data.imageUrl as File).name.split('.').pop();
+          const imagePath = `quiz/${quiz.key_date}/${imageName}`;
+          this.uploadImage(doc.id, imagePath, data.imageUrl as File).then(() => {
+            // Upload question images
+            Promise.all(data.blocks.map(async (item, index) => {
+              const questionImageName = `Q${index}`+ guid() + '.' + (item.imageUrl as File).name.split('.').pop();
+              const questionImagePath = `quiz/${quiz.key_date}/${questionImageName}`;
+              this.uploadImage(`${doc.id}/quiz_questions/${index}`, questionImagePath, item.imageUrl as File)
+            })).then(() => {
+              resolve();
+            }).catch((error: Error) => {
+              console.log(error);
+              reject(error);
+            })
+          }).catch((error: Error) => {
+            console.log(error);
+            reject(error);
+          })
         }).catch((error: Error) => {
           console.log(error);
           reject(error);
@@ -81,6 +104,24 @@ export class DailyQuizService {
       }).catch((error: Error) => {
         reject(error);
       });
+    });
+  }
+
+  private uploadImage(docPath: string, imagePath: string, imageFile: File) {
+    return new Promise<void>((resolve, reject) => {
+      if (imageFile && isFile(imageFile)) {
+        const downloadURL = this.storage.uploadWithDownloadURL(imagePath, imageFile)
+        
+        downloadURL.subscribe((imageURL) => {
+          this.db.setDocument('quizes', docPath, { imageUrl: imageURL }).then(() => {
+            resolve();
+          }).catch((error: Error) => {
+            reject(error);
+          });
+        });
+      } else {
+        resolve();
+      }
     });
   }
 

@@ -20,14 +20,14 @@ export class DailyQuizAddComponent implements OnInit {
   pushMessage: string;
   editor: any;
   blocks: QuestionBlock[] = [];
-  description: string;
   key_date: string;
   imageUrl: string | File | Observable<string> | { path: any; url: string | Observable<string>; };
   private quizImage: File;
-  private image: File;
   imageSrc: string|ArrayBuffer;
-  questionImageSrc: string[]|ArrayBuffer[] = [];
   totalTime: number;
+
+  private questionImages: File[] = [];
+  questionImageSrc: (string|ArrayBuffer)[] = [];
   isImageEmpty: boolean = true;
   isSubmitButtonDisabled: boolean = true;
 
@@ -41,7 +41,7 @@ export class DailyQuizAddComponent implements OnInit {
 
   ngOnInit() {
     this.imageSrc = getEmptyImage();
-    this.image = null;
+    this.quizImage = null;
     this.key_date = new Date().toISOString().slice(0, 10);
     this.totalTime = 10;
   }
@@ -61,8 +61,19 @@ export class DailyQuizAddComponent implements OnInit {
     
   }
 
+  toggleAnswerOption(event: Event, questionIndex: number, optionIndex: number) {
+    this.blocks[questionIndex].answerOptions.forEach((ans, i) => {
+      if(i == optionIndex) {
+        ans.isAnswer = true;
+      } else {
+        ans.isAnswer = false;
+      }
+    });
+  }
+
   addBlock(event?: Event) {
-    this.questionImageSrc.push(null);
+    this.questionImageSrc.push(getEmptyImage());
+    this.questionImages.push(null);
     
     this.blocks.push({
       question: '',
@@ -72,22 +83,26 @@ export class DailyQuizAddComponent implements OnInit {
         {
           title: '',
           isAnswer: true,
-          imageUrl: ''
+          key: '',
+          imageUrl: null
         },
         {
           title: '',
           isAnswer: false,
-          imageUrl: ''
+          key: '',
+          imageUrl: null
         },
         {
           title: '',
           isAnswer: false,
-          imageUrl: ''
+          key: '',
+          imageUrl: null
         },
         {
           title: '',
           isAnswer: false,
-          imageUrl: ''
+          key: '',
+          imageUrl: null
         },
       ]
     });
@@ -95,6 +110,8 @@ export class DailyQuizAddComponent implements OnInit {
 
   removeBlock(index: number) {
     this.blocks.splice(index, 1);
+    this.questionImageSrc.splice(index, 1);
+    this.questionImages.splice(index, 1);
   }
 
   getDescription() {
@@ -119,12 +136,14 @@ export class DailyQuizAddComponent implements OnInit {
   }
 
   onQuestionImageChange(event: Event, index: number) {
-    this.image = (event.target as HTMLInputElement).files[0];
+    this.questionImages[index] = (event.target as HTMLInputElement).files[0];
     const reader = new FileReader();
     reader.onload = () => {
       this.questionImageSrc[index] = reader.result;
     };
-    reader.readAsDataURL(this.image);
+    reader.readAsDataURL(this.questionImages[index]);
+
+    this.blocks[index].imageUrl = this.questionImages[index];
   }
 
   addQuiz(event: Event) {
@@ -139,14 +158,15 @@ export class DailyQuizAddComponent implements OnInit {
     this.quiz.add({
       title: this.title,
       description: this.getDescription(),
+      push_notification_message: this.pushMessage,
       key_date: this.key_date,
-      imageUrl: this.image,
+      imageUrl: this.quizImage,
       totalTime: this.totalTime,
       isActive: true,
       blocks: this.blocks
     }).then(() => {
-      this.alert.success(this.i18n.get('PageAdded'), false, 5000, true);
-      this.navigation.redirectTo('pages', 'list');
+      this.alert.success(this.i18n.get('QuizAdded'), false, 5000, true);
+      // this.navigation.redirectTo('pages', 'list');
     }).catch((error: Error) => {
       this.alert.error(error.message);
     }).finally(() => {
@@ -154,3 +174,13 @@ export class DailyQuizAddComponent implements OnInit {
     });
   }
 }
+
+// HELPER
+// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+
+// let unshuffled = ['hello', 'a', 't', 'q', 1, 2, 3, {cats: true}]
+
+// let shuffled = unshuffled
+//   .map((a) => ({sort: Math.random(), value: a}))
+//   .sort((a, b) => a.sort - b.sort)
+//   .map((a) => a.value)

@@ -4,6 +4,7 @@ export interface Quiz {
   id?: string;
   title: string;
   description: string;
+  push_notification_message: string;
   key_date: string;
   imageUrl?: File|string|Observable<string>|{ path: string|any, url: string|Observable<string> };
   isActive: boolean;
@@ -26,5 +27,6 @@ export interface QuestionBlock {
 export interface AnswerOption {
   title: string;
   isAnswer: boolean;
-  imageUrl?: File|string|Observable<string>|{ path: string|any, url: string|Observable<string> };
+  key: string;
+  imageUrl?: string;
 }
