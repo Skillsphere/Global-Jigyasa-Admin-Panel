@@ -45,9 +45,9 @@ export class UsersService {
       createdBy: this.db.currentUser.id,
       updatedBy: null
     };
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.firebaseUser.create(data.email, data.password).then((uid: string) => {
-        this.uploadImageAfter(this.db.addDocument('users', user, uid), user, data).then(() => {
+        this.uploadImageAfter(this.db.addDocument('adminusers', user, uid), user, data).then(() => {
           resolve();
         }).catch((error: Error) => {
           reject(error);
@@ -73,7 +73,7 @@ export class UsersService {
       createdBy: null,
       updatedBy: null
     };
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.firebaseUser.register(user).then(() => {
         resolve();
       }).catch((error: Error) => {
@@ -83,16 +83,16 @@ export class UsersService {
   }
 
   private uploadImageAfter(promise: Promise<any>, user: User, data: User) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       promise.then((doc: any) => {
         if (data.avatar && isFile(data.avatar)) {
           const id = doc ? doc.id : data.id;
           const imageFile = (data.avatar as File);
           const imageName = guid() + '.' + imageFile.name.split('.').pop();
-          const imagePath = `users/${id}/${imageName}`;
+          const imagePath = `adminusers/${id}/${imageName}`;
           this.storage.upload(imagePath, imageFile).then(() => {
             user.avatar = imagePath;
-            const savePromise: Promise<any> = doc ? doc.set(user) : this.db.setDocument('users', id, user);
+            const savePromise: Promise<any> = doc ? doc.set(user) : this.db.setDocument('adminusers', id, user);
             savePromise.finally(() => {
               resolve();
             });
@@ -109,7 +109,7 @@ export class UsersService {
   }
 
   get(id: string) {
-    return this.db.getDocument('users', id).pipe(map((user: User) => {
+    return this.db.getDocument('adminusers', id).pipe(map((user: User) => {
       user.id = id;
       return user;
     }));
@@ -128,7 +128,7 @@ export class UsersService {
   }
 
   getAll() {
-    return this.db.getCollection('users');
+    return this.db.getCollection('adminusers');
   }
 
   getWhere(field: string, operator: firebase.firestore.WhereFilterOp, value: string) {
@@ -136,7 +136,7 @@ export class UsersService {
   }
 
   getWhereFn(queryFn: QueryFn) {
-    return this.db.getCollection('users', queryFn);
+    return this.db.getCollection('adminusers', queryFn);
   }
 
   getAvatarUrl(imagePath: string) {
@@ -155,7 +155,7 @@ export class UsersService {
   }
 
   private updateEmail(email: string, password: string, newEmail: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (newEmail !== email) {
         this.firebaseUser.updateEmail(email, password, newEmail).then(() => {
           resolve();
@@ -169,7 +169,7 @@ export class UsersService {
   }
 
   private updatePassword(email: string, password: string, newPassword: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (newPassword !== password) {
         this.firebaseUser.updatePassword(email, password, newPassword).then(() => {
           resolve();
@@ -197,10 +197,10 @@ export class UsersService {
     if (/*data.avatar !== undefined && */data.avatar === null) {
       user.avatar = null;
     }
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.updateEmail(oldData.email, oldData.password, data.email).then(() => {
         this.updatePassword(data.email, oldData.password, data.password).then(() => {
-          this.uploadImageAfter(this.db.setDocument('users', id, user), user, {...data, id: id}).then(() => {
+          this.uploadImageAfter(this.db.setDocument('adminusers', id, user), user, {...data, id: id}).then(() => {
             resolve();
           }).catch((error: Error) => {
             reject(error);
@@ -215,7 +215,7 @@ export class UsersService {
   }
 
   private deleteImage(imagePath: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (imagePath) {
         this.storage.delete(imagePath).toPromise().then(() => {
           resolve();
@@ -229,9 +229,9 @@ export class UsersService {
   }
 
   delete(id: string, data: { email: string, password: string, avatar: string }) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.firebaseUser.delete(data.email, data.password).then(() => {
-        this.db.deleteDocument('users', id).then(() => {
+        this.db.deleteDocument('adminusers', id).then(() => {
           this.deleteImage(data.avatar).then(() => {
             resolve();
           }).catch((error: Error) => {
@@ -247,11 +247,11 @@ export class UsersService {
   }
 
   countAll() {
-    return this.db.getDocumentsCount('users');
+    return this.db.getDocumentsCount('adminusers');
   }
 
   countWhereFn(queryFn: QueryFn) {
-    return this.db.getDocumentsCount('users', queryFn);
+    return this.db.getDocumentsCount('adminusers', queryFn);
   }
 
   countWhere(field: string, operator: firebase.firestore.WhereFilterOp, value: string) {
