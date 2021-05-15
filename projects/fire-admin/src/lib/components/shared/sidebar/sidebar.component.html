@@ -52,20 +52,9 @@
       </div>
     </li>
     <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" [class.active]="isActive(['posts', 'list'], ['posts', 'add'], ['posts', 'edit'], ['posts', 'translate'], ['posts', 'categories'])" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="true">
-        <i class="material-icons">description</i>
-        <span>{{ 'Posts' | translate }}</span>
-      </a>
-      <div class="dropdown-menu dropdown-menu-small" [class.show]="style === 'expanded' && isActive(['posts', 'list'], ['posts', 'add'], ['posts', 'edit'], ['posts', 'translate'], ['posts', 'categories'])">
-        <a class="dropdown-item " [routerLink]="navigation.getRouterLink('posts', 'list')" routerLinkActive="active">{{ 'List' | translate }}</a>
-        <a class="dropdown-item " [routerLink]="navigation.getRouterLink('posts', 'add')" routerLinkActive="active">{{ 'Add' | translate }}</a>
-        <a class="dropdown-item " [routerLink]="navigation.getRouterLink('posts', 'categories')" routerLinkActive="active">{{ 'Categories' | translate }}</a>
-      </div>
-    </li>
-    <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" [class.active]="isActive(['newsbulletins', 'add'])" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="true">
         <i class="material-icons">description</i>
-        <span>{{ 'News Bulletins' | translate }}</span>
+        <span>{{ 'News Bulletin' | translate }}</span>
       </a>
       <div class="dropdown-menu dropdown-menu-small" [class.show]="style === 'expanded' && isActive(['posts', 'add'])">
         <a class="dropdown-item " [routerLink]="navigation.getRouterLink('newsbulletins', 'list')" routerLinkActive="active">{{ 'List' | translate }}</a>

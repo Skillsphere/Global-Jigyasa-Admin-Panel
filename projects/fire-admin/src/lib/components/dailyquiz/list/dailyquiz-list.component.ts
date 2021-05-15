@@ -8,10 +8,9 @@ import { NavigationService } from '../../../services/navigation.service';
 import { I18nService } from '../../../services/i18n.service';
 import { ActivatedRoute } from '@angular/router';
 import { SettingsService } from '../../../services/settings.service';
-import { Language } from '../../../models/language.model';
-import { PagesService } from '../../../services/collections/pages.service';
-import { Page } from '../../../models/collections/page.model';
 import { CurrentUserService } from '../../../services/current-user.service';
+import { Quiz } from '../../../models/collections/quiz.model';
+import { DailyQuizService } from '../../../services/collections/dailyquiz.service';
 
 @Component({
   selector: 'fa-pages-list',
@@ -20,8 +19,8 @@ import { CurrentUserService } from '../../../services/current-user.service';
 })
 export class DailyQuizListComponent implements OnInit, OnDestroy {
 
-  allPages: Observable<Page[]>;
-  selectedPage: Page = null;
+  allQuizzes: Observable<Quiz[]>;
+  selectedQuiz: Quiz = null;
   @ViewChild(DataTableDirective, {static : false}) private dataTableElement: DataTableDirective;
   dataTableOptions: DataTables.Settings|any = {
     responsive: true,
@@ -30,11 +29,10 @@ export class DailyQuizListComponent implements OnInit, OnDestroy {
   dataTableTrigger: Subject<void> = new Subject();
   private subscription: Subscription = new Subscription();
   private routeParamsChange: Subject<void> = new Subject<void>();
-  allLanguages: Language[] = [];
   isLoading: boolean = true;
 
   constructor(
-    private pages: PagesService,
+    private quizzes: DailyQuizService,
     private alert: AlertService,
     private i18n: I18nService,
     private route: ActivatedRoute,
@@ -44,17 +42,13 @@ export class DailyQuizListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // Get all languages
-    this.settings.supportedLanguages.forEach((language: Language) => {
-      this.allLanguages[language.key] = language;
-    });
     // Get route params
     this.subscription.add(
       this.route.params.subscribe((params: { authorId: string }) => {
         this.routeParamsChange.next();
         this.isLoading = true;
-        // Get all pages
-        this.allPages = this.pages.getWhereFn(ref => {
+        // Get all quizzes
+        this.allQuizzes = this.quizzes.getWhereFn(ref => {
           let query: any = ref;
           // Filter by author
           if (params.authorId) {
@@ -63,13 +57,13 @@ export class DailyQuizListComponent implements OnInit, OnDestroy {
           //query = query.orderBy('createdAt', 'desc'); // requires an index to work
           return query;
         }, true).pipe(
-          map((pages: Page[]) => {
-            return pages.sort((a: Page, b: Page) => b.createdAt - a.createdAt);
+          map((quizzes: Quiz[]) => {
+            return quizzes.sort((a: Quiz, b: Quiz) => b.createdAt - a.createdAt);
           }),
           takeUntil(this.routeParamsChange)
         );
         this.subscription.add(
-          this.allPages.subscribe((pages: Page[]) => {
+          this.allQuizzes.subscribe((quizzes: Quiz[]) => {
             // console.log(pages);
             // Refresh datatable on data change
             refreshDataTable(this.dataTableElement, this.dataTableTrigger);
@@ -86,13 +80,9 @@ export class DailyQuizListComponent implements OnInit, OnDestroy {
     this.routeParamsChange.next();
   }
 
-  deletePage(page: Page) {
-    this.pages.delete(page.id, {
-      lang: page.lang,
-      translationId: page.translationId,
-      translations: page.translations
-    }).then(() => {
-      this.alert.success(this.i18n.get('PageDeleted', { title: page.title }), false, 5000);
+  deleteQuiz(quiz: Quiz) {
+    this.quizzes.delete(quiz.id).then(() => {
+      this.alert.success(this.i18n.get('Quiz Deleted', { title: quiz.title }), false, 5000);
     }).catch((error: Error) => {
       this.alert.error(error.message);
     });
