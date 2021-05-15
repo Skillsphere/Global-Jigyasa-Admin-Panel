@@ -161,12 +161,12 @@ export class DailyQuizAddComponent implements OnInit {
       push_notification_message: this.pushMessage,
       key_date: this.key_date,
       imageUrl: this.quizImage,
-      totalTime: this.totalTime,
+      totalTime: this.totalTime * 60000, // time in millis
       isActive: true,
       blocks: this.blocks
     }).then(() => {
       this.alert.success(this.i18n.get('QuizAdded'), false, 5000, true);
-      // this.navigation.redirectTo('pages', 'list');
+      this.navigation.redirectTo('dailyquiz', 'list');
     }).catch((error: Error) => {
       this.alert.error(error.message);
     }).finally(() => {
